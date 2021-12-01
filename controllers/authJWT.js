@@ -70,10 +70,14 @@ exports.register = (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  // TODO Understand what to do here wtf
   if (!req.body.token) {
     throw { code: 400, message: "Refresh Token Required" };
   } else {
+    let refreshToken = REFRESHTOKENS.find((token) => token === req.body.token);
+    if (refreshToken) {
+      let index = REFRESHTOKENS.indexOf(refreshToken);
+      REFRESHTOKENS.splice(index, 1);
+    }
     res.send("logout");
   }
 };
@@ -96,7 +100,6 @@ exports.token = (req, res) => {
   }
   try {
     const decoded = jwt.verify(req.body.token, process.env.SECRET);
-    console.log(decoded);
     const token = jwt.sign(
       { email: decoded.email, info: decoded.info },
       process.env.SECRET,
